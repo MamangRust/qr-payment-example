@@ -1,0 +1,1 @@
+## Example QR Payment
