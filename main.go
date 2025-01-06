@@ -110,9 +110,26 @@ func processPayment(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Pembayaran berhasil diproses"))
 }
 
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173") // Ganti dengan origin front-end Anda
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
-	http.HandleFunc("/generate-qr", generateQRCode)
-	http.HandleFunc("/process-payment", processPayment)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/generate-qr", generateQRCode)
+	mux.HandleFunc("/process-payment", processPayment)
+
+	handlerWithCORS := enableCORS(mux)
+
 	fmt.Println("Server berjalan di http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", handlerWithCORS))
 }

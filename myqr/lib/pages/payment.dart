@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class Payment extends StatefulWidget {
   final String qrValue;
@@ -25,7 +23,8 @@ class _PaymentState extends State<Payment> {
 
       print("Parsed Data: $parsedData");
 
-      if (!parsedData.containsKey('merchantID') || !parsedData.containsKey('amount')) {
+      if (!parsedData.containsKey('merchantID') ||
+          !parsedData.containsKey('amount')) {
         setState(() {
           _paymentStatus = "Error: Data QR code tidak lengkap.";
         });
@@ -38,25 +37,11 @@ class _PaymentState extends State<Payment> {
       print("Merchant ID: $merchantID");
       print("Amount: $amount");
 
-      final response = await http.post(
-        Uri.parse('https://55ff-114-79-0-129.ngrok-free.app/process-payment'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'merchantID': merchantID,
-          'amount': double.parse(amount),
-        }),
-      );
+      await Future.delayed(Duration(seconds: 2));
 
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _paymentStatus = "Pembayaran berhasil!";
-        });
-      } else {
-        setState(() {
-          _paymentStatus = "Pembayaran gagal: ${response.statusCode}";
-        });
-      }
+      setState(() {
+        _paymentStatus = "Pembayaran berhasil!";
+      });
     } catch (e) {
       setState(() {
         _paymentStatus = "Error: $e";
@@ -82,26 +67,26 @@ class _PaymentState extends State<Payment> {
         child: _isLoading
             ? CircularProgressIndicator()
             : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _paymentStatus,
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Data QR Code: ${widget.qrValue}",
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("Kembali ke Scanner"),
-            ),
-          ],
-        ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _paymentStatus,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Data QR Code: ${widget.qrValue}",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Kembali ke Scanner"),
+                  ),
+                ],
+              ),
       ),
     );
   }

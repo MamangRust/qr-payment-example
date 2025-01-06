@@ -38,6 +38,7 @@ dependencies:
   mobile_scanner: ^6.0.2
   http: ^1.2.2
   encrypt: ^5.0.3
+  dart_nats: ^0.6.5
 
 dev_dependencies:
   flutter_test:
